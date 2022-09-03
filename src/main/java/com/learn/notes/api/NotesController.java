@@ -9,7 +9,9 @@ import com.learn.notes.model.Notes;
 import com.learn.notes.model.User;
 import com.learn.notes.service.NotesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +33,7 @@ public class NotesController {
         return savedNotes;
     }
 
-    @GetMapping(value = "/")
+    @GetMapping(value = "/all")
     private GenericResponseMulti<List<NotesResponse>> getAllNotes(){
         List<NotesResponse> notes = notesService.getAllNotes();
         if (notes==null || notes.size()==0)
@@ -39,6 +41,19 @@ public class NotesController {
         GenericResponseMulti response = new GenericResponseMulti("Success","Users Fetched", notes);
         System.out.println("Generic Response: " + response);
         return response;
+    }
+
+    @GetMapping(value = "/")
+    private GenericResponseMulti<List<User>> getAllNotess(){
+        List<Notes> users = notesService.getAllNotess();
+        GenericResponseMulti response = new GenericResponseMulti("Success","Users Fetched", users);
+        System.out.println("Generic Response: " + response);
+        return response;
+    }
+
+    @DeleteMapping(value = "/{id}")
+    private GenericResponse<Boolean> deleteNotes(@PathVariable("id") Long id){
+        return notesService.deleteNotes(id);
     }
 
 }
