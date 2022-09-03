@@ -1,5 +1,7 @@
 package com.learn.notes;
 
+import com.learn.notes.config.GenericResponse;
+import com.learn.notes.model.User;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -7,7 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class NotesApplication {
 
 	public static void main(String[] args) {
-		System.out.print("hello");
 		SpringApplication.run(NotesApplication.class, args);
 	}
 
