@@ -17,4 +17,7 @@ public interface UserRepository extends JpaRepository<User,String> {
             " order by 1 desc limit 1", nativeQuery = true)
     User findUserByEmail(String email);
 
+    @Query(value = "select * from tbl_user u where u.instituteid=:id order by 1 desc limit 1", nativeQuery = true)
+    User findUserById(String id);
+
 }
