@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class GenericResponse<Object> {
 
-    private String status;
-    private String message;
+    private String status; // Success | Error
+    private String message; // ""
     private Object data;
 }

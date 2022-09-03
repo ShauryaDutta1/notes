@@ -8,6 +8,7 @@ import com.learn.notes.model.User;
 import com.learn.notes.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +29,8 @@ public class UserController {
     @PostMapping(value = "/")
     private GenericResponse<User> addUser(@RequestBody UserRequest request){
         System.out.println("Request Data: " + request);
-        User existing = userService.findExistingUserByEmail(request.getInstitutionalEmail());
+        User existing = userService.findExistingUserByEmailAndInstituteId(request.getInstitutionalEmail(),
+                request.getInstituteId());
         if (existing!=null)
         {
             System.out.println("User Already Existing");
@@ -51,11 +53,21 @@ public class UserController {
     }
 
     @GetMapping(value = "/{email}")
-    private GenericResponse<User> getUserByEmailId(){
-        List<User> users = userService.getAllUsers();
-        GenericResponse response = new GenericResponse("Success","Users Fetched", users);
+    private GenericResponse<User> getUserByEmailId(@PathVariable("email") String email){
+        User user = userService.getUserByEmail(email);
+        if (user==null)
+        {
+            System.out.println("User Not Existing");
+            return new GenericResponse<>("Error", "User Not Exists with Email", null);
+        }
+        GenericResponse response = new GenericResponse("Success","Users Fetched", user);
         System.out.println("Generic Response: " + response);
         return response;
+    }
+
+    @GetMapping("/hello")
+    public String hello(){
+        return "Hello World";
     }
 
 }

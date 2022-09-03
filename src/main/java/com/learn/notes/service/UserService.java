@@ -25,7 +25,11 @@ public class UserService {
         return users;
     }
 
-    public User findExistingUserByEmail(String institutionalEmail) {
-        return userRepository.findUserByEmail(institutionalEmail);
+    public User findExistingUserByEmailAndInstituteId(String institutionalEmail, String instituteId) {
+        return userRepository.findUserByEmailAndInstitutionalId(institutionalEmail, instituteId);
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findUserByEmail(email);
     }
 }
