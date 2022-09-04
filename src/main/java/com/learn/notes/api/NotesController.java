@@ -5,6 +5,7 @@ import com.learn.notes.config.GenericResponse;
 import com.learn.notes.config.GenericResponseMulti;
 import com.learn.notes.config.NotesRequest;
 import com.learn.notes.config.NotesResponse;
+import com.learn.notes.model.File;
 import com.learn.notes.model.Notes;
 import com.learn.notes.model.User;
 import com.learn.notes.service.NotesService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -33,20 +35,31 @@ public class NotesController {
         return savedNotes;
     }
 
-    @GetMapping(value = "/all")
+    /*@GetMapping(value = "/all")
     private GenericResponseMulti<List<NotesResponse>> getAllNotes(){
         List<NotesResponse> notes = notesService.getAllNotes();
         if (notes==null || notes.size()==0)
             return new GenericResponseMulti("Error","Something Went Wrong", null);
-        GenericResponseMulti response = new GenericResponseMulti("Success","Users Fetched", notes);
+        GenericResponseMulti response = new GenericResponseMulti("Success","Notes Fetched", notes);
+        System.out.println("Generic Response: " + response);
+        return response;
+    }
+     */
+
+    @GetMapping(value = "/all")
+    private GenericResponseMulti<List<Notes>> getAllNotess(){
+        List<Notes> users = notesService.getAllNotess();
+        GenericResponseMulti response = new GenericResponseMulti("Success","Notes Fetched", users);
         System.out.println("Generic Response: " + response);
         return response;
     }
 
     @GetMapping(value = "/")
-    private GenericResponseMulti<List<User>> getAllNotess(){
-        List<Notes> users = notesService.getAllNotess();
-        GenericResponseMulti response = new GenericResponseMulti("Success","Users Fetched", users);
+    private GenericResponse<List<File>> getAllNotesFilesByNoteId(@RequestParam("noteId") Long noteId){
+        Notes notes = notesService.getAllNotesById(noteId);
+        if (notes == null)
+            return new GenericResponse("Error", "No Data Found", notes);
+        GenericResponse response = new GenericResponse("Success","Files Fetched", notes.getFiles());
         System.out.println("Generic Response: " + response);
         return response;
     }

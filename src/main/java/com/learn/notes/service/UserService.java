@@ -1,5 +1,6 @@
 package com.learn.notes.service;
 
+import com.learn.notes.config.GenericResponse;
 import com.learn.notes.model.User;
 import com.learn.notes.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,5 +32,19 @@ public class UserService {
 
     public User getUserByEmail(String email) {
         return userRepository.findUserByEmail(email);
+    }
+
+    public GenericResponse<Boolean> login(String email, String password) {
+        User userByEmail = userRepository.findUserByEmail(email);
+        GenericResponse<Boolean> response = null;
+        if (userByEmail==null){
+            System.out.println("User Not found with email: " + email);
+            response = new GenericResponse<>("Error", "User Not found with email: " + email, false);
+        }
+        if (userByEmail!=null && password!=null && userByEmail.getPassword().equalsIgnoreCase(password))
+            response = new GenericResponse<>("Success", "User Login Successful", true);
+        else
+            response = new GenericResponse<>("Error", "Incorrect Password Entered", false);
+        return response;
     }
 }

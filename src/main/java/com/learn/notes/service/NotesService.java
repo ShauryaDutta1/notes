@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class NotesService {
@@ -30,8 +31,8 @@ public class NotesService {
         mapper = new ObjectMapper();
         Notes notes = mapper.convertValue(request, Notes.class);
         notes.setDeleted(false);
-        notes.setCreatedDate(LocalDateTime.now());
-        notes.setLastUpdatedDate(LocalDateTime.now());
+        notes.setCreatedDate(LocalDateTime.now().plusHours(5L).plusMinutes(30));
+        notes.setLastUpdatedDate(LocalDateTime.now().plusHours(5L).plusMinutes(30));
         Notes saved = null;
         try {
             User user = userRepository.findUserById(request.getUser().getInstituteId());
@@ -79,5 +80,15 @@ public class NotesService {
             return new GenericResponse<>("Error", "Some Error Occured", false);
         }
         return new GenericResponse<>("Success", "Notes Deleted", true);
+    }
+
+    public Notes getAllNotesById(Long noteId) {
+        Optional<Notes> byId = notesRepository.findById(noteId);
+        if (byId==null || byId.get()==null) {
+            System.out.println("No Notes found");
+            return null;
+        }
+        System.out.println("Notes Found: " + byId);
+        return byId.get();
     }
 }

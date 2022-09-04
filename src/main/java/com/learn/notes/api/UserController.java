@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -65,9 +66,10 @@ public class UserController {
         return response;
     }
 
-    @GetMapping("/hello")
-    public String hello(){
-        return "Hello World";
+    @GetMapping(value = "/login")
+    public GenericResponse<Boolean> login(@RequestParam() String email,
+                        @RequestParam() String password){
+        return userService.login(email, password);
     }
 
 }
