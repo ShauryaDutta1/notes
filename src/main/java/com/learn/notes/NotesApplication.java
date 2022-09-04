@@ -15,7 +15,7 @@ public class NotesApplication {
 	}
 
 	@Bean
-	public RestTemplate getRestTemplate(){
+	public RestTemplate restTemplate(){
 		return new RestTemplate();
 	}
 

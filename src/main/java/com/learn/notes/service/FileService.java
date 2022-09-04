@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.learn.notes.config.FileRequest;
 import com.learn.notes.config.GenericResponse;
 import com.learn.notes.config.ImageResponse;
+import com.learn.notes.config.UploadResponse;
 import com.learn.notes.model.File;
+import com.learn.notes.model.Image;
 import com.learn.notes.model.Notes;
 import com.learn.notes.model.User;
 import com.learn.notes.repository.FileRepository;
@@ -15,7 +17,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,9 +40,11 @@ public class FileService {
     private NotesRepository notesRepository;
 
     @Autowired
-    private ObjectMapper mapper;
+    private StorageService storageService;
 
     @Autowired
+    private ObjectMapper mapper;
+
     private RestTemplate restTemplate;
 
     @Value(value = "${s3.bucket.url}")
@@ -45,7 +53,6 @@ public class FileService {
 
     public GenericResponse<File> addFile(MultipartFile request,  String title, String description,
                                          String tag, String type, Notes notes){
-        mapper = new ObjectMapper();
         File file = new File();
         file.setTag(tag);
         file.setType(type);
@@ -64,9 +71,16 @@ public class FileService {
             String userName = savedNotes.getUser().getFirstName()+" "+savedNotes.getUser().getLastName();
             file.setCreatedBy(userName);
             System.out.println("Name: " + userName);
-            ImageResponse response = fetchUrlAndSizeFromImageS3Bucket(request);
-            file.setUrl(response.getUrl());
-            file.setSize(file.getSize());
+            ImageResponse response = null;
+            UploadResponse uploadResponse=null;
+            try {
+                 uploadResponse = storageService.uploadFile(request);
+                 //response = fetchUrlAndSizeFromImageS3Bucket(request);
+            }catch (Exception e){
+                System.out.println("EX: "+ e.getMessage());
+            }
+            file.setUrl(uploadResponse.getUrl());
+            file.setSize(uploadResponse.getSize());
             System.out.println("Response from template: " + response);
             System.out.println("Going to Save");
             saved = fileRepository.save(file);
@@ -81,13 +95,19 @@ public class FileService {
     }
 
     private ImageResponse fetchUrlAndSizeFromImageS3Bucket(MultipartFile file) {
+        restTemplate = new RestTemplate();
         String url = BASE_URL + "/file/upload";
-        HttpHeaders headers = new HttpHeaders();
+       HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+//        MultiValueMap<String, Object> form = new LinkedMultiValueMap<>();
+//        File file1 = new File(file);
+//        form.add("file", );
         HttpEntity entity = new HttpEntity(file,headers);
         ImageResponse response=null;
         try {
-             response = restTemplate.exchange(url, HttpMethod.POST, entity, ImageResponse.class)
-                    .getBody();
+             response = restTemplate.postForObject(url,entity,ImageResponse.class);
+                    // url,entity, ImageResponse.class);
+                    //.getBody();
             System.out.println("Image saved in Bucket");
         }catch (Exception e){
             System.out.println("Exception Occured: " + e.getMessage());

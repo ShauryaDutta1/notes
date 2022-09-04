@@ -29,12 +29,12 @@ public class FileController {
     private FileService fileService;
 
     @PostMapping("/")
-    private GenericResponse<File> addFile(@RequestBody MultipartFile file,
-                                          @RequestParam String title,
+    private GenericResponse<File> addFile(@RequestParam String title,
                                           @RequestParam String description,
                                           @RequestParam String tag,
                                           @RequestParam String type,
-                                          @RequestParam Notes notes){
+                                          @RequestParam Notes notes,
+                                          @RequestBody MultipartFile file){
         GenericResponse<File> savedFile = fileService.addFile(file, title, description, tag, type, notes);
         return savedFile;
     }
